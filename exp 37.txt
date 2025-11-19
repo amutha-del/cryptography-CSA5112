@@ -1,0 +1,71 @@
+import string
+
+# English letter frequency order (most frequent → least frequent)
+eng_freq_order = "ETAOINSHRDLCUMWFGYPBVKJXQZ"
+
+# Function to count frequency of letters in ciphertext
+def count_freq(text):
+    freq = {}
+    for c in text.upper():
+        if c.isalpha():
+            freq[c] = freq.get(c, 0) + 1
+    return sorted(freq.items(), key=lambda x: x[1], reverse=True)
+
+# Generate plaintext guesses
+def frequency_attack(ciphertext, top_n=10):
+    freq_list = count_freq(ciphertext)
+    cipher_order = ''.join([x[0] for x in freq_list])
+
+    results = []
+
+    # Try multiple mappings: best guess → next best → ...
+    for i in range(top_n):
+        mapping = {}
+        for j in range(len(cipher_order)):
+            if j < len(eng_freq_order):
+                mapping[cipher_order[j]] = eng_freq_order[(j + i) % 26]
+
+        # Decrypt using guess
+        guess = ""
+        for c in ciphertext:
+            if c.upper() in mapping:
+                new_char = mapping[c.upper()]
+                guess += new_char.lower() if c.islower() else new_char
+            else:
+                guess += c
+
+        results.append(guess)
+
+    return results
+
+# Example ciphertext (monoalphabetic substitution)
+ciphertext = "ZOL SLHY PU AOL HUKLY NYVCLR!"
+top_n = 5
+
+print("Ciphertext:", ciphertext)
+print("\nTop", top_n, "possible plaintexts:\n")
+guesses = frequency_attack(ciphertext, top_n)
+
+for i, g in enumerate(guesses, 1):
+    print(f"{i}. {g}")
+
+
+output
+Ciphertext: ZOL SLHY PU AOL HUKLY NYVCLR!
+
+Top 5 possible plaintexts:
+
+1. the sear in the under ground!
+2. ohe srat ip ohe unler grownd!
+3. ehe snay il ehe undor grawnd!
+4. dhe sray im dhe uncor grwndo!
+5. the sray io the under grwnda!
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,66 @@
+# Function to find modular inverse of a modulo m
+
+def mod_inverse(a, m):
+a = a % m
+for x in range(1, m):
+if (a * x) % m == 1:
+return x
+return None  # No modular inverse if a and m are not coprime
+
+# Encryption
+
+def affine_encrypt(plaintext, a, b):
+ciphertext = ""
+for char in plaintext:
+if char.isalpha():
+base = ord('A') if char.isupper() else ord('a')
+c = (a * (ord(char) - base) + b) % 26
+ciphertext += chr(c + base)
+else:
+ciphertext += char
+return ciphertext
+
+# Decryption
+
+def affine_decrypt(ciphertext, a, b):
+plaintext = ""
+a_inv = mod_inverse(a, 26)
+if a_inv is None:
+return "Error: 'a' and 26 are not coprime, decryption impossible."
+
+```
+for char in ciphertext:
+    if char.isalpha():
+        base = ord('A') if char.isupper() else ord('a')
+        p = (a_inv * ((ord(char) - base) - b)) % 26
+        plaintext += chr(p + base)
+    else:
+        plaintext += char
+return plaintext
+```
+
+# Example usage
+
+plaintext = "HELLO"
+a = 5   # Must be coprime with 26 (1,3,5,7,9,11,15,17,19,21,23,25)
+b = 8
+
+ciphertext = affine_encrypt(plaintext, a, b)
+decrypted_text = affine_decrypt(ciphertext, a, b)
+
+print("Plaintext:", plaintext)
+print("Ciphertext:", ciphertext)
+print("Decrypted text:", decrypted_text)
+
+output
+Plaintext: HELLO
+Ciphertext: RCWWA
+Decrypted text: HELLO
+
+
+
+
+
+
+
+

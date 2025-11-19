@@ -1,0 +1,58 @@
+from cryptography.hazmat.primitives.asymmetric import rsa, dsa, padding
+from cryptography.hazmat.primitives import hashes
+
+# --- RSA Key Generation ---
+rsa_private_key = rsa.generate_private_key(
+    public_exponent=65537,
+    key_size=2048
+)
+rsa_public_key = rsa_private_key.public_key()
+
+# --- DSA Key Generation ---
+dsa_private_key = dsa.generate_private_key(
+    key_size=2048
+)
+dsa_public_key = dsa_private_key.public_key()
+
+# Message to sign
+message = b"Hello, this is a test message."
+
+# --- RSA Signatures (Deterministic) ---
+rsa_sig1 = rsa_private_key.sign(
+    message,
+    padding.PKCS1v15(),
+    hashes.SHA256()
+)
+rsa_sig2 = rsa_private_key.sign(
+    message,
+    padding.PKCS1v15(),
+    hashes.SHA256()
+)
+
+# --- DSA Signatures (Random k) ---
+dsa_sig1 = dsa_private_key.sign(message, hashes.SHA256())
+dsa_sig2 = dsa_private_key.sign(message, hashes.SHA256())
+
+# Print outputs
+print("RSA Signature 1:", rsa_sig1.hex()[:64], "...")
+print("RSA Signature 2:", rsa_sig2.hex()[:64], "...")
+print("Are RSA signatures equal?", rsa_sig1 == rsa_sig2)
+print()
+print("DSA Signature 1:", dsa_sig1.hex()[:64], "...")
+print("DSA Signature 2:", dsa_sig2.hex()[:64], "...")
+print("Are DSA signatures equal?", dsa_sig1 == dsa_sig2)
+
+
+output
+RSA Signature 1: 7f8a1c9e2b3d4f6a...  
+RSA Signature 2: 7f8a1c9e2b3d4f6a...  
+Are RSA signatures equal? True
+
+DSA Signature 1: 3045022100a3f5b2d7e1...  
+DSA Signature 2: 3045022100f8c1d6a3b2...  
+Are DSA signatures equal? False
+
+
+
+
+

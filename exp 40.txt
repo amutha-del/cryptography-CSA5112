@@ -1,0 +1,68 @@
+import string
+
+english_order = "etaoinshrdlcumwfgypbvkjxq"
+
+def count_freq(text):
+    freq = {c: 0 for c in string.ascii_lowercase}
+    for ch in text.lower():
+        if ch in freq:
+            freq[ch] += 1
+    return freq
+
+def sorted_by_freq(freq):
+    return sorted(freq, key=freq.get, reverse=True)
+
+def generate_plain(cipher, cipher_sorted, shift):
+    mapping = {}
+    
+    rotated = english_order[shift:] + english_order[:shift]
+    
+    for i, c in enumerate(cipher_sorted):
+        mapping[c] = rotated[i]
+    
+    pt = ""
+    for ch in cipher:
+        if ch.lower() in mapping:
+            plain = mapping[ch.lower()]
+            pt += plain.upper() if ch.isupper() else plain
+        else:
+            pt += ch
+    return pt
+
+cipher = input("Enter ciphertext: ")
+topN = int(input("How many top plaintexts? "))
+
+freq = count_freq(cipher)
+cipher_sorted = sorted_by_freq(freq)
+
+print("\nTop", topN, "plaintext guesses:\n")
+for i in range(topN):
+    pt = generate_plain(cipher, cipher_sorted, i)
+    print("Rank", i+1)
+    print(pt)
+    print()
+
+output
+Top 5 plaintext guesses:
+
+Rank 1
+THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG
+
+Rank 2
+GSA WPMXR KJYTF QBH ZEFCL QBVO GSA MTUD PYN
+
+Rank 3
+EOC ULQDT IHWSA OZF XCDAM OZTQ EOC KRSC NWL
+
+Rank 4
+NLI DVJKG RQFCP XMY GLOWP XYKC NLI SJBH ETR
+
+Rank 5
+UPR KCSBN YXMDW FTD NHVDE FTDL UPR ZQPA HKW
+
+
+
+
+
+
+

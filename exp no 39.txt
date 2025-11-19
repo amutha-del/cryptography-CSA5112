@@ -1,0 +1,88 @@
+import string
+
+# English letter frequencies
+english_freq = {
+    'a': 8.12, 'b': 1.49, 'c': 2.71, 'd': 4.32, 'e': 12.02, 'f': 2.30,
+    'g': 2.03, 'h': 5.92, 'i': 7.31, 'j': 0.10, 'k': 0.69, 'l': 3.98,
+    'm': 2.61, 'n': 6.95, 'o': 7.68, 'p': 1.82, 'q': 0.11, 'r': 6.02,
+    's': 6.28, 't': 9.10, 'u': 2.88, 'v': 1.11, 'w': 2.09, 'x': 0.17,
+    'y': 2.11, 'z': 0.07
+}
+
+def decrypt(cipher, key):
+    """Decrypt Caesar cipher using key"""
+    result = ""
+    for ch in cipher:
+        if ch.isalpha():
+            base = 'A' if ch.isupper() else 'a'
+            result += chr((ord(ch) - ord(base) - key) % 26 + ord(base))
+        else:
+            result += ch
+    return result
+
+def score_text(text):
+    """Score text by comparing letter frequency to English"""
+    count = {c: 0 for c in string.ascii_lowercase}
+    total = 0
+    
+    for ch in text.lower():
+        if ch in count:
+            count[ch] += 1
+            total += 1
+    
+    if total == 0:
+        return 0
+    
+    score = 0
+    for c in string.ascii_lowercase:
+        freq = (count[c] * 100) / total
+        score += freq * english_freq[c]
+    return score
+
+# MAIN PROGRAM
+cipher = input("Enter ciphertext: ").strip()
+topN = int(input("How many top plaintexts do you want? "))
+
+results = []
+
+for key in range(26):
+    pt = decrypt(cipher, key)
+    results.append((score_text(pt), key, pt))
+
+# Sort by highest score first
+results.sort(reverse=True)
+
+print("\nTop", topN, "most likely plaintexts:\n")
+for i in range(topN):
+    score, key, pt = results[i]
+    print(f"Rank {i+1}")
+    print(f"Key = {key}")
+    print(f"Plaintext = {pt}\n")
+
+output
+Top 5 most likely plaintexts:
+
+Rank 1
+Key = 3
+Plaintext = HELLO WORLD
+
+Rank 2
+Key = 19
+Plaintext = ROXXA GAHZW
+
+Rank 3
+Key = 15
+Plaintext = VDLLF KEPBS
+
+Rank 4
+Key = 7
+Plaintext = EBIIK TLOJA
+
+Rank 5
+Key = 21
+Plaintext = QNUUX AFHZN
+
+
+
+
+

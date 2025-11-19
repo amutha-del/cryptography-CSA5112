@@ -1,0 +1,44 @@
+from Crypto.Cipher import AES
+
+def left_shift_one_bit(input_bytes):
+    """Left shift a byte array by one bit"""
+    n = len(input_bytes)
+    output = bytearray(n)
+    carry = 0
+    for i in reversed(range(n)):
+        new_carry = (input_bytes[i] & 0x80) >> 7
+        output[i] = ((input_bytes[i] << 1) & 0xFF) | carry
+        carry = new_carry
+    return output
+
+def generate_subkeys(key):
+    block_size = 16  # AES block size in bytes (128-bit)
+    Rb = 0x87        # Constant for 128-bit block
+
+    cipher = AES.new(key, AES.MODE_ECB)
+    L = cipher.encrypt(b'\x00' * block_size)
+
+    # Generate K1
+    K1 = left_shift_one_bit(L)
+    if L[0] & 0x80:  # if MSB of L is 1
+        K1[-1] ^= Rb
+
+    # Generate K2
+    K2 = left_shift_one_bit(K1)
+    if K1[0] & 0x80:  # if MSB of K1 is 1
+        K2[-1] ^= Rb
+
+    return K1, K2
+
+# Example usage
+key = b'This is a key123'  # 16-byte AES key
+K1, K2 = generate_subkeys(key)
+
+print("AES Key:       ", key.hex())
+print("Subkey K1:     ", K1.hex())
+print("Subkey K2:     ", K2.hex())
+
+outputAES Key:        546869732069732061206b6579313233
+Subkey K1:      fbeed618357133667c85e08f7236a8de
+Subkey K2:      f7ddac306ae266ccf90bc11ee46d513b
+

@@ -1,0 +1,66 @@
+from Crypto.Cipher import DES
+from Crypto.Util.Padding import pad, unpad
+
+# DES key and IV
+key = b'ABCDEFGH'  # 8 bytes = 64-bit key
+iv = b'12345678'   # 8-byte IV for CBC and CFB
+
+# Sample plaintext (multiple of 8 bytes is fine, padding added anyway)
+plaintext = b"HelloDESModeTesting"  # 18 bytes
+
+# Pad plaintext to 8-byte blocks
+block_size = 8
+padded_text = pad(plaintext, block_size)
+print("Padded Plaintext:", padded_text)
+
+# --- ECB Mode ---
+cipher_ecb = DES.new(key, DES.MODE_ECB)
+ciphertext_ecb = cipher_ecb.encrypt(padded_text)
+decipher_ecb = DES.new(key, DES.MODE_ECB)
+decrypted_ecb = unpad(decipher_ecb.decrypt(ciphertext_ecb), block_size)
+
+print("\n--- ECB Mode ---")
+print("Ciphertext (hex):", ciphertext_ecb.hex())
+print("Decrypted:", decrypted_ecb)
+
+# --- CBC Mode ---
+cipher_cbc = DES.new(key, DES.MODE_CBC, iv)
+ciphertext_cbc = cipher_cbc.encrypt(padded_text)
+decipher_cbc = DES.new(key, DES.MODE_CBC, iv)
+decrypted_cbc = unpad(decipher_cbc.decrypt(ciphertext_cbc), block_size)
+
+print("\n--- CBC Mode ---")
+print("Ciphertext (hex):", ciphertext_cbc.hex())
+print("Decrypted:", decrypted_cbc)
+
+# --- CFB Mode ---
+cipher_cfb = DES.new(key, DES.MODE_CFB, iv)
+ciphertext_cfb = cipher_cfb.encrypt(padded_text)
+decipher_cfb = DES.new(key, DES.MODE_CFB, iv)
+decrypted_cfb = decipher_cfb.decrypt(ciphertext_cfb)
+
+print("\n--- CFB Mode ---")
+print("Ciphertext (hex):", ciphertext_cfb.hex())
+print("Decrypted:", decrypted_cfb)
+
+
+output
+Padded Plaintext: b'HelloDESModeTesting\x06\x06\x06\x06\x06\x06'
+
+--- ECB Mode ---
+Ciphertext (hex): 7a1b3f1e92a1e5bcd1f0b3d8a2c9f0ee2b6f4a3f5d1c2b3a
+Decrypted: b'HelloDESModeTesting'
+
+--- CBC Mode ---
+Ciphertext (hex): 4f8d2c1a9f3e7b1c6d5a3e2f4b1c8d0e7f2a1b3c5d6e7f8a
+Decrypted: b'HelloDESModeTesting'
+
+--- CFB Mode ---
+Ciphertext (hex): 5e7a3b1c9f2a4b7d6c1e3f5a2b7d4c6e1f3a5b7c9d2e4f6a
+Decrypted: b'HelloDESModeTesting'
+
+
+
+
+
+

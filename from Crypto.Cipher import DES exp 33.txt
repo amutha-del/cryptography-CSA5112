@@ -1,0 +1,25 @@
+from Crypto.Cipher import DES
+from Crypto.Util.Padding import pad, unpad
+
+# DES works with 8‑byte (64‑bit) keys
+key = b'ABCDEFGH'   # Example 64-bit key (DES uses 56 bits + parity bits)
+cipher = DES.new(key, DES.MODE_ECB)
+
+# Message must be multiple of 8 bytes
+plaintext = b"HELLODES"   # 8 bytes → one DES block
+
+# Encrypt
+ciphertext = cipher.encrypt(plaintext)
+print("Plaintext:   ", plaintext)
+print("Ciphertext:  ", ciphertext.hex())
+
+# Decrypt
+decrypt_cipher = DES.new(key, DES.MODE_ECB)
+decrypted = decrypt_cipher.decrypt(ciphertext)
+print("Decrypted:   ", decrypted)
+
+
+output
+Plaintext:    b'HELLODES'
+Ciphertext:   9f0a0df7283c96ce
+Decrypted:    b'HELLODES'
