@@ -1,0 +1,45 @@
+import string
+
+letters = string.ascii_uppercase
+
+def mod_inverse(a, m):
+    for x in range(m):
+        if (a * x) % m == 0:
+            continue
+        if (a * x) % m == 1:
+            return x
+    return None
+
+# Given info:
+C1 = letters.index("B")  # most frequent ciphertext letter
+C2 = letters.index("U")  # second most frequent
+P1 = letters.index("E")  # most frequent plaintext letter
+P2 = letters.index("T")  # second most frequent
+
+# Solve:
+# C1 = a*P1 + b (mod 26)
+# C2 = a*P2 + b (mod 26)
+
+a = ((C1 - C2) * mod_inverse((P1 - P2) % 26, 26)) % 26
+b = (C1 - a * P1) % 26
+
+print("Found Affine Key:")
+print("a =", a)
+print("b =", b)
+
+# Decrypt function
+def affine_decrypt(cipher, a, b):
+    inv = mod_inverse(a, 26)
+    result = ""
+    for ch in cipher.upper():
+        if ch in letters:
+            idx = letters.index(ch)
+            P = (inv * (idx - b)) % 26
+            result += letters[P]
+        else:
+            result += ch
+    return result
+
+# Example ciphertext (put yours here)
+ciphertext = "BUUBBBUUUBBUB"
+print("Decrypted:", affine_decrypt(ciphertext, a, b))

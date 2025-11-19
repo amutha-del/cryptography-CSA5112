@@ -1,0 +1,14 @@
+def caesar_encrypt(text, k):
+    result = ""
+    for ch in text:
+        if ch.isalpha():
+            base = ord('A') if ch.isupper() else ord('a')
+            result += chr((ord(ch) - base + k) % 26 + base)
+        else:
+            result += ch
+    return result
+
+# Demo
+text = "HELLO WORLD"
+for k in range(1, 26):
+    print("k =", k, "→", caesar_encrypt(text, k))

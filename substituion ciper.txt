@@ -1,0 +1,30 @@
+cipher = """53‡‡†305))6*;4826)4‡.)4‡);806*;48†8¶60))85;;]8*;:‡*8†83
+(88)5*†;46(;88*96*?;8)*‡(;485);5*†2:*‡(;4956*2(5*—4)8¶8*
+;4069285);)6†8)4‡‡;1(‡9;48081;8:8‡1;48†85;4)485†528806*81 (‡9;48;(88;4(‡?34;48)4‡;161;:188;‡?;"""
+
+# 1. FREQUENCY ANALYSIS
+from collections import Counter
+freq = Counter(cipher)
+print("Frequency of each symbol:\n")
+for c, f in freq.most_common():
+    print(c, ":", f)
+
+# 2. APPLY MAPPING (edit this dictionary as you discover letters)
+mapping = {
+    "‡": "E",   # guess: most frequent → e
+    "8": "T",   # guess for 'the'
+    "4": "H",   # guess for 'the'
+    # Add more guessed mappings here
+}
+
+def decode(cipher, mapping):
+    result = ""
+    for ch in cipher:
+        if ch in mapping:
+            result += mapping[ch]
+        else:
+            result += "_"
+    return result
+
+print("\n\nPartial Decoding:\n")
+print(decode(cipher, mapping))

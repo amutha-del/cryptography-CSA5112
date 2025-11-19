@@ -1,0 +1,35 @@
+import string
+
+# Example substitution key (A→Q, B→W, C→E, ...)
+key = "QWERTYUIOPASDFGHJKLZXCVBNM"   # 26-letter permutation
+alphabet = string.ascii_uppercase
+
+# Encrypt function
+def encrypt(text):
+    text = text.upper()
+    result = ""
+    for ch in text:
+        if ch in alphabet:
+            idx = alphabet.index(ch)
+            result += key[idx]
+        else:
+            result += ch
+    return result
+
+# Decrypt function
+def decrypt(cipher):
+    cipher = cipher.upper()
+    result = ""
+    for ch in cipher:
+        if ch in key:
+            idx = key.index(ch)
+            result += alphabet[idx]
+        else:
+            result += ch
+    return result
+
+# Demo
+plain = "HELLO WORLD"
+cipher = encrypt(plain)
+print("Encrypted:", cipher)
+print("Decrypted:", decrypt(cipher))

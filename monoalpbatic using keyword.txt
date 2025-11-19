@@ -1,0 +1,61 @@
+import string
+
+def generate_key(keyword):
+    keyword = keyword.upper()
+    result = ""
+
+    # Add keyword letters (no duplicates)
+    for ch in keyword:
+        if ch not in result and ch.isalpha():
+            result += ch
+
+    # Add remaining alphabet letters
+    for ch in string.ascii_uppercase:
+        if ch not in result:
+            result += ch
+
+    return result
+
+def encrypt(plaintext, key):
+    alphabet = string.ascii_uppercase
+    ciphertext = ""
+    plaintext = plaintext.upper()
+
+    for ch in plaintext:
+        if ch in alphabet:
+            idx = alphabet.index(ch)
+            ciphertext += key[idx]
+        else:
+            ciphertext += ch
+    return ciphertext
+
+def decrypt(ciphertext, key):
+    alphabet = string.ascii_uppercase
+    plaintext = ""
+    ciphertext = ciphertext.upper()
+
+    for ch in ciphertext:
+        if ch in key:
+            idx = key.index(ch)
+            plaintext += alphabet[idx]
+        else:
+            plaintext += ch
+    return plaintext
+
+
+# --------------------------
+# Example using keyword CIPHER
+# --------------------------
+keyword = "CIPHER"
+key = generate_key(keyword)
+
+print("Generated Cipher Alphabet:")
+print(key)
+
+message = "HELLO WORLD"
+cipher = encrypt(message, key)
+plain = decrypt(cipher, key)
+
+print("\nPlaintext:", message)
+print("Ciphertext:", cipher)
+print("Decrypted:", plain)

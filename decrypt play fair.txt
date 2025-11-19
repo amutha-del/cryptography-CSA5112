@@ -1,0 +1,26 @@
+import string
+
+def generate_matrix(key):
+    key = key.upper().replace("J", "I")
+    matrix = []
+    used = set()
+
+    for ch in key:
+        if ch not in used and ch.isalpha():
+            matrix.append(ch)
+            used.add(ch)
+
+    for ch in string.ascii_uppercase:
+        if ch not in used and ch != "J":
+            matrix.append(ch)
+
+    return [matrix[i:i+5] for i in range(0, 25, 5)]
+
+def find_pos(matrix, ch):
+    for r in range(5):
+        for c in range(5):
+            if matrix[r][c] == ch:
+                return r, c
+
+def playfair_decrypt(cipher, matrix):
+    cipher = cipher.replace(" ", "").upper().re

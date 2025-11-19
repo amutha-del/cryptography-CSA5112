@@ -1,0 +1,21 @@
+import math
+
+# All valid and invalid values of a for Affine Cipher
+valid_a = []
+invalid_a = []
+
+for a in range(26):
+    if math.gcd(a, 26) == 1:
+        valid_a.append(a)
+    else:
+        invalid_a.append(a)
+
+print("Valid values of a (gcd(a,26)=1):")
+print(valid_a)
+
+print("\nInvalid values of a (NOT allowed):")
+print(invalid_a)
+
+# For part (a)
+print("\nValues of b:")
+print("Any value from 0 to 25 is allowed.")

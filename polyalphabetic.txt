@@ -1,0 +1,45 @@
+def vigenere_encrypt(plaintext, key):
+    plaintext = plaintext.upper()
+    key = key.upper()
+    ciphertext = ""
+    j = 0
+
+    for ch in plaintext:
+        if ch.isalpha():
+            shift = ord(key[j % len(key)]) - ord('A')
+            encrypted = chr(((ord(ch) - ord('A') + shift) % 26) + ord('A'))
+            ciphertext += encrypted
+            j += 1
+        else:
+            ciphertext += ch
+    return ciphertext
+
+def vigenere_decrypt(ciphertext, key):
+    ciphertext = ciphertext.upper()
+    key = key.upper()
+    plaintext = ""
+    j = 0
+
+    for ch in ciphertext:
+        if ch.isalpha():
+            shift = ord(key[j % len(key)]) - ord('A')
+            decrypted = chr(((ord(ch) - ord('A') - shift) % 26) + ord('A'))
+            plaintext += decrypted
+            j += 1
+        else:
+            plaintext += ch
+    return plaintext
+
+# -----------------------
+# Example
+# -----------------------
+plaintext = "HELLO WORLD"
+key = "KEY"
+
+cipher = vigenere_encrypt(plaintext, key)
+plain = vigenere_decrypt(cipher, key)
+
+print("Plaintext:", plaintext)
+print("Key:", key)
+print("Ciphertext:", cipher)
+print("Decrypted:", plain)
