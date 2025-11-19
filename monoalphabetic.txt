@@ -33,3 +33,8 @@ plain = "HELLO WORLD"
 cipher = encrypt(plain)
 print("Encrypted:", cipher)
 print("Decrypted:", decrypt(cipher))
+
+output
+Encrypted: ITSSG VGKSR
+Decrypted: HELLO WORLD
+
