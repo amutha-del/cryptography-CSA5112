@@ -1,0 +1,143 @@
+# ------------------------------
+# S-DES FUNCTIONS
+# ------------------------------
+
+P10  = [3,5,2,7,4,10,1,9,8,6]
+P8   = [6,3,7,4,8,5,10,9]
+P4   = [2,4,3,1]
+IP   = [2,6,3,1,4,8,5,7]
+IP_INV = [4,1,3,5,7,2,8,6]
+EP   = [4,1,2,3,2,3,4,1]
+S0 = [[[1,0],[0,1],[3,3],[2,2]],
+      [[3,3],[2,2],[1,1],[0,0]],
+      [[0,0],[2,2],[1,1],[3,3]],
+      [[3,3],[1,1],[3,3],[2,2]]]
+S1 = [[[0,0],[1,1],[2,2],[3,3]],
+      [[2,2],[0,0],[1,1],[3,3]],
+      [[3,3],[0,0],[1,1],[0,0]],
+      [[2,2],[1,1],[0,0],[3,3]]]
+
+def permute(bits, table):
+    return ''.join(bits[i-1] for i in table)
+
+def left_shift(bits):
+    return bits[1:] + bits[0]
+
+def key_gen(key):
+    key_p10 = permute(key, P10)
+    left = key_p10[:5]
+    right = key_p10[5:]
+    
+    left = left_shift(left)
+    right = left_shift(right)
+    
+    k1 = permute(left + right, P8)
+    
+    left = left_shift(left_shift(left))
+    right = left_shift(left_shift(right))
+    k2 = permute(left + right, P8)
+    
+    return k1, k2
+
+def sbox_lookup(sbox, bits):
+    row = int(bits[0] + bits[3], 2)
+    col = int(bits[1] + bits[2], 2)
+    return format(sbox[row][col], '02b')
+
+def fk(bits, key):
+    left = bits[:4]
+    right = bits[4:]
+    
+    EP_bits = permute(right, EP)
+    xored = format(int(EP_bits, 2) ^ int(key, 2), '08b')
+    
+    left_xor = xored[:4]
+    right_xor = xored[4:]
+    
+    s0_out = sbox_lookup(S0, left_xor)
+    s1_out = sbox_lookup(S1, right_xor)
+    
+    P4_bits = permute(s0_out + s1_out, P4)
+    left_out = format(int(left, 2) ^ int(P4_bits, 2), '04b')
+    
+    return left_out + right
+
+def sdes_encrypt(plaintext, key1, key2):
+    bits = permute(plaintext, IP)
+    temp = fk(bits, key1)
+    swapped = temp[4:] + temp[:4]
+    temp2 = fk(swapped, key2)
+    return permute(temp2, IP_INV)
+
+def sdes_decrypt(ciphertext, key1, key2):
+    bits = permute(ciphertext, IP)
+    temp = fk(bits, key2)
+    swapped = temp[4:] + temp[:4]
+    temp2 = fk(swapped, key1)
+    return permute(temp2, IP_INV)
+
+# ------------------------------
+# CBC MODE
+# ------------------------------
+
+def xor(a, b):
+    return ''.join('1' if x != y else '0' for x, y in zip(a, b))
+
+def cbc_encrypt(blocks, key1, key2, iv):
+    ciphertext = []
+    prev = iv
+    for block in blocks:
+        xored = xor(block, prev)
+        enc = sdes_encrypt(xored, key1, key2)
+        ciphertext.append(enc)
+        prev = enc
+    return ciphertext
+
+def cbc_decrypt(cipherblocks, key1, key2, iv):
+    plaintext = []
+    prev = iv
+    for block in cipherblocks:
+        dec = sdes_decrypt(block, key1, key2)
+        plain = xor(dec, prev)
+        plaintext.append(plain)
+        prev = block
+    return plaintext
+
+
+# ------------------------------
+# TEST DATA
+# ------------------------------
+
+key = "0111111101"
+iv = "10101010"
+
+plaintext_blocks = [
+    "00000001",
+    "00100011"
+]
+
+k1, k2 = key_gen(key)
+
+# ENCRYPT CBC
+cipher = cbc_encrypt(plaintext_blocks, k1, k2, iv)
+
+print("CBC Encryption Output:")
+for c in cipher:
+    print(c)
+
+# DECRYPT CBC
+plain = cbc_decrypt(cipher, k1, k2, iv)
+
+print("\nCBC Decryption Output:")
+for p in plain:
+    print(p)
+
+output
+CBC Encryption Output:
+11110100
+00001011
+
+CBC Decryption Output:
+00000001
+00100011
+ 

@@ -1,0 +1,41 @@
+# sha3_capacity_zero_lanes.py
+
+# SHA‑3: 1600‑bit state = 25 lanes
+# For 1024‑bit rate: 1024/64 = 16 lanes
+# Capacity lanes = 9 lanes
+
+RATE_LANES = 16
+CAPACITY_LANES = 9
+
+# Rate lanes have at least 1 nonzero bit
+rate_lanes = [1] * RATE_LANES
+
+# Capacity lanes start with zero bits
+capacity_lanes = [0] * CAPACITY_LANES
+
+# Combine into the state (25 lanes total)
+state = rate_lanes + capacity_lanes
+
+print("Initial SHA-3 state lanes:")
+print(state)
+
+rounds = 0
+
+# No permutation → nothing changes
+while any(lane == 0 for lane in capacity_lanes):
+    rounds += 1
+    # but no update is done → capacity lanes stay zero
+    if rounds > 10:
+        break  # stop demo
+
+print("\nNumber of rounds until all capacity lanes become nonzero (without permutation):")
+print("Result: They NEVER become nonzero.")
+print("Capacity lanes remain:", capacity_lanes)
+
+ output
+Initial SHA-3 state lanes:
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+Number of rounds until all capacity lanes become nonzero (without permutation):
+Result: They NEVER become nonzero.
+Capacity lanes remain: [0, 0, 0, 0, 0, 0, 0, 0, 0]

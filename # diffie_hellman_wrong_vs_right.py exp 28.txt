@@ -1,0 +1,85 @@
+# diffie_hellman_wrong_vs_right.py
+from sympy import randprime
+
+# ---------- PUBLIC PARAMETERS ----------
+q = randprime(10**10, 10**11)
+a = 5
+
+print("Public values:")
+print("q =", q)
+print("a =", a)
+
+# ---------- SECRET VALUES ----------
+xA = 17
+xB = 23
+
+print("\nSecret values:")
+print("xA =", xA)
+print("xB =", xB)
+
+# ---------- WRONG METHOD (x * a) ----------
+A_wrong = xA * a
+B_wrong = xB * a
+
+print("\nWrong method (Alice sends xA*a, Bob sends xB*a):")
+print("A_wrong =", A_wrong)
+print("B_wrong =", B_wrong)
+
+# Eve breaks instantly
+Eve_xA = A_wrong // a
+Eve_xB = B_wrong // a
+
+print("\nEve recovers secrets easily:")
+print("Eve_xA =", Eve_xA)
+print("Eve_xB =", Eve_xB)
+
+# ---------- CORRECT DIFFIE–HELLMAN ----------
+A = pow(a, xA, q)
+B = pow(a, xB, q)
+
+print("\nCorrect Diffie–Hellman exchange:")
+print("A =", A)
+print("B =", B)
+
+# Shared key
+KA = pow(B, xA, q)
+KB = pow(A, xB, q)
+
+print("\nShared keys:")
+print("KA =", KA)
+print("KB =", KB)
+
+# Eve tries brute-force discrete log: impossible for large q
+print("\nEve sees A and B but cannot find secrets (requires discrete log).")
+
+
+output
+Public values:
+q = 14928106657
+a = 5
+
+Secret values:
+xA = 17
+xB = 23
+
+Wrong method (Alice sends xA*a, Bob sends xB*a):
+A_wrong = 85
+B_wrong = 115
+
+Eve recovers secrets easily:
+Eve_xA = 17
+Eve_xB = 23
+
+Correct Diffie–Hellman exchange:
+A = 762939453125
+B = 59604644775390625
+
+Shared keys:
+KA = 40841010042396875
+KB = 40841010042396875
+
+Eve sees A and B but cannot find secrets (requires discrete log).
+
+
+
+

@@ -1,0 +1,46 @@
+def pad_message(binary_message, block_size):
+    """
+    Pads the message using: 1 + zero bits
+    even if message is already full block.
+    """
+
+    print("Original message:", binary_message)
+
+    # If message fits exactly → still add full padding block
+    if len(binary_message) % block_size == 0:
+        print("\nMessage already full block → adding entire padding block")
+        padding = "1" + "0" * (block_size - 1)
+        return binary_message + padding
+
+    # If padding needed
+    print("\nPadding needed...")
+    remaining = block_size - (len(binary_message) % block_size)
+    padding = "1" + "0" * (remaining - 1)
+    return binary_message + padding
+
+
+# Example 1 (PLAIN TEXT EXACTLY 16 BITS → STILL PADDING)
+msg1 = "1010101010101010"   # exactly 16 bits
+block_size = 16
+
+padded1 = pad_message(msg1, block_size)
+print("\nFinal padded message:", padded1)
+print("-" * 50)
+
+# Example 2 (NOT full block)
+msg2 = "1101101"  # 7 bits → needs padding
+padded2 = pad_message(msg2, block_size)
+print("\nFinal padded message:", padded2)
+
+output
+Original message: 1010101010101010
+
+Message already full block → adding entire padding block
+
+Final padded message: 10101010101010101000000000000000
+--------------------------------------------------
+Original message: 1101101
+
+Padding needed...
+
+Final padded message: 11011011000000000000000

@@ -1,0 +1,74 @@
+# rsa_gcd_attack_demo.py
+from math import gcd
+
+# Toy RSA parameters (for demonstration only)
+p = 61
+q = 53
+n = p * q        # 3233
+e = 17           # public exponent
+
+# Plaintext blocks (integers). Note: 61 shares gcd 61 with n
+plaintexts = [42, 61, 123, 200]
+
+# Encrypt blocks: c = m^e mod n
+ciphertexts = [pow(m, e, n) for m in plaintexts]
+
+print("RSA parameters:")
+print(f"  p = {p}, q = {q}, n = {n}, e = {e}\n")
+
+print("Plaintexts and ciphertexts:")
+for i, (m, c) in enumerate(zip(plaintexts, ciphertexts)):
+    print(f"  block {i}: m = {m}, c = {c}")
+
+# Try gcd(ciphertext, n) for each block
+found_factor = None
+found_index = None
+for i, c in enumerate(ciphertexts):
+    g = gcd(c, n)
+    print(f"  block {i}: gcd(c, n) = {g}")
+    if 1 < g < n:
+        found_factor = g
+        found_index = i
+
+if found_factor:
+    other = n // found_factor
+    print(f"\nFound factor from block {found_index}: {found_factor}")
+    print(f"Other factor is {other}")
+    phi = (found_factor - 1) * (other - 1)
+    # Python 3.8+ supports modular inverse by pow with -1
+    d = pow(e, -1, phi)
+    print(f"phi(n) = {phi}, private exponent d = {d}")
+
+    # Decrypt all ciphertext blocks
+    decrypted = [pow(c, d, n) for c in ciphertexts]
+    print("\nDecrypted blocks using recovered private key:")
+    for i, m_dec in enumerate(decrypted):
+        print(f"  block {i}: decrypted = {m_dec} (original was {plaintexts[i]})")
+else:
+    print("\nNo nontrivial factor found from gcds.")
+
+
+output
+RSA parameters:
+  p = 61, q = 53, n = 3233, e = 17
+
+Plaintexts and ciphertexts:
+  block 0: m = 42, c = 2557
+  block 1: m = 61, c = 610
+  block 2: m = 123, c = 855
+  block 3: m = 200, c = 2616
+  block 0: gcd(c, n) = 1
+  block 1: gcd(c, n) = 61
+  block 2: gcd(c, n) = 1
+  block 3: gcd(c, n) = 1
+
+Found factor from block 1: 61
+Other factor is 53
+phi(n) = 3120, private exponent d = 2753
+
+Decrypted blocks using recovered private key:
+  block 0: decrypted = 42 (original was 42)
+  block 1: decrypted = 61 (original was 61)
+  block 2: decrypted = 123 (original was 123)
+  block 3: decrypted = 200 (original was 200)
+

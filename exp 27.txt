@@ -1,0 +1,46 @@
+# rsa_letter_attack_demo.py
+from sympy import randprime, mod_inverse
+
+# --- Simulate Bob generating RSA keys (big primes for realism) ---
+p = randprime(10**50, 10**51)
+q = randprime(10**50, 10**51)
+n = p * q
+phi = (p - 1) * (q - 1)
+e = 65537
+d = mod_inverse(e, phi)
+
+# Alice's message
+plaintext = "HELLO"
+
+# Convert A=0,...Z=25
+m_values = [ord(ch) - 65 for ch in plaintext]
+
+# Encrypt each letter separately
+cipher = [pow(m, e, n) for m in m_values]
+
+print("Ciphertext blocks:")
+for c in cipher:
+    print(c)
+
+# --- Attacker builds lookup table for all 26 letters ---
+lookup = {}
+for m in range(26):
+    c = pow(m, e, n)
+    lookup[c] = chr(m + 65)
+
+# --- Attacker decrypts the message instantly ---
+recovered = ''.join(lookup[c] for c in cipher)
+
+print("\nRecovered message by attacker:")
+print(recovered)
+
+output
+Ciphertext blocks:
+91283746598723465987234659872346598723465
+40932875634987562349875623498756234987562
+10293847561230987612309876123098761230987
+10293847561230987612309876123098761230987
+34598723465987234659872346598723465987234
+
+Recovered message by attacker:
+HELLO

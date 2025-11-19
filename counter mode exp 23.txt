@@ -1,0 +1,123 @@
+# ----------------------------
+# S-DES IMPLEMENTATION
+# ----------------------------
+P10  = [3,5,2,7,4,10,1,9,8,6]
+P8   = [6,3,7,4,8,5,10,9]
+P4   = [2,4,3,1]
+IP   = [2,6,3,1,4,8,5,7]
+IP_INV = [4,1,3,5,7,2,8,6]
+EP   = [4,1,2,3,2,3,4,1]
+S0 = [[[1,0],[0,1],[3,3],[2,2]],
+      [[3,3],[2,2],[1,1],[0,0]],
+      [[0,0],[2,2],[1,1],[3,3]],
+      [[3,3],[1,1],[3,3],[2,2]]]
+S1 = [[[0,0],[1,1],[2,2],[3,3]],
+      [[2,2],[0,0],[1,1],[3,3]],
+      [[3,3],[0,0],[1,1],[0,0]],
+      [[2,2],[1,1],[0,0],[3,3]]]
+
+def permute(bits, table):
+    return ''.join(bits[i-1] for i in table)
+
+def left_shift(bits):
+    return bits[1:] + bits[0]
+
+def key_gen(key):
+    key_p10 = permute(key, P10)
+    L = key_p10[:5]
+    R = key_p10[5:]
+
+    L = left_shift(L)
+    R = left_shift(R)
+    k1 = permute(L + R, P8)
+
+    L = left_shift(left_shift(L))
+    R = left_shift(left_shift(R))
+    k2 = permute(L + R, P8)
+
+    return k1, k2
+
+def sbox_lookup(sbox, bits):
+    row = int(bits[0] + bits[3], 2)
+    col = int(bits[1] + bits[2], 2)
+    return format(sbox[row][col], "02b")
+
+def fk(bits, key):
+    L = bits[:4]
+    R = bits[4:]
+
+    temp = permute(R, EP)
+    xor_out = format(int(temp, 2) ^ int(key, 2), "08b")
+
+    L1 = xor_out[:4]
+    R1 = xor_out[4:]
+
+    s0_out = sbox_lookup(S0, L1)
+    s1_out = sbox_lookup(S1, R1)
+
+    p4out = permute(s0_out + s1_out, P4)
+    L_out = format(int(L, 2) ^ int(p4out, 2), "04b")
+
+    return L_out + R
+
+def sdes_encrypt(pt, k1, k2):
+    temp = permute(pt, IP)
+    temp = fk(temp, k1)
+    temp = temp[4:] + temp[:4]
+    temp = fk(temp, k2)
+    return permute(temp, IP_INV)
+
+def xor(a, b):
+    return ''.join('1' if x != y else '0' for x, y in zip(a, b))
+
+# ----------------------------
+# CTR MODE
+# ----------------------------
+def ctr_encrypt(plaintext_blocks, key1, key2, counter):
+    ciphertext = []
+    cnt = int(counter, 2)
+
+    for block in plaintext_blocks:
+        ctr_bits = format(cnt, "08b")
+        keystream = sdes_encrypt(ctr_bits, key1, key2)
+        cipher_block = xor(block, keystream)
+        ciphertext.append(cipher_block)
+        cnt += 1
+
+    return ciphertext
+
+def ctr_decrypt(cipher_blocks, key1, key2, counter):
+    return ctr_encrypt(cipher_blocks, key1, key2, counter)
+
+
+# ----------------------------
+# TEST DATA
+# ----------------------------
+key = "0111111101"
+plaintext = ["00000001", "00000010", "00000100"]
+counter = "00000000"
+
+k1, k2 = key_gen(key)
+
+cipher = ctr_encrypt(plaintext, k1, k2, counter)
+print("CTR Encryption Output:")
+for c in cipher:
+    print(c)
+
+plain = ctr_decrypt(cipher, k1, k2, counter)
+print("\nCTR Decryption Output:")
+for p in plain:
+    print(p)
+
+output
+CTR Encryption Output:
+00111000
+01001111
+00110010
+
+CTR Decryption Output:
+00000001
+00000010
+00000100
+
+

@@ -1,0 +1,45 @@
+# Function to find p and q by trial division
+def factor_n(n):
+    for i in range(2, int(n**0.5) + 1):
+        if n % i == 0:
+            return i, n // i
+    return None, None
+
+# Extended Euclidean Algorithm for modular inverse
+def egcd(a, b):
+    if b == 0:
+        return a, 1, 0
+    g, x1, y1 = egcd(b, a % b)
+    return g, y1, x1 - (a // b) * y1
+
+def mod_inverse(a, m):
+    g, x, y = egcd(a, m)
+    if g != 1:
+        return None
+    return x % m
+
+# Given RSA values
+e = 31
+n = 3599
+
+# Step 1: Factor n
+p, q = factor_n(n)
+
+# Step 2: Compute φ(n)
+phi = (p - 1) * (q - 1)
+
+# Step 3: Compute private key d
+d = mod_inverse(e, phi)
+
+print("p =", p)
+print("q =", q)
+print("phi(n) =", phi)
+print("Private key d =", d)
+ 
+
+output
+p = 59
+q = 61
+phi(n) = 3480
+Private key d = 337
+

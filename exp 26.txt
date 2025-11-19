@@ -1,0 +1,74 @@
+# rsa_private_key_leak_demo.py
+from math import gcd
+from sympy import mod_inverse
+
+# --- Bob's original RSA setup ---
+p = 61
+q = 53
+n = p * q                  # 3233
+phi = (p - 1) * (q - 1)     # 3120
+e = 17
+d = mod_inverse(e, phi)
+
+print("Original RSA keys:")
+print("n =", n)
+print("phi(n) =", phi)
+print("e =", e)
+print("d =", d)
+
+# Bob leaks his private key d!
+
+print("\n[!] Bob leaks his private key d!")
+print("Attacker now knows d =", d)
+
+# --- Attacker recovers phi(n) using known formulas ---
+print("\nAttacker computes phi(n) easily (since small example).")
+print("phi(n) =", phi)
+
+# Bob tries to FIX the leak by choosing a new public exponent
+e_new = 7
+print("\nBob chooses a NEW public key e' =", e_new)
+
+# Attacker immediately computes new private key
+d_new = mod_inverse(e_new, phi)
+print("Attacker computes new private key d' =", d_new)
+
+# Verify encryption/decryption
+message = 123
+cipher = pow(message, e_new, n)
+decrypted = pow(cipher, d_new, n)
+
+print("\nEncrypting/decrypting with Bob's NEW key:")
+print("Message =", message)
+print("Ciphertext =", cipher)
+print("Decrypted =", decrypted)
+
+if decrypted == message:
+    print("\n[!] Attack successful — attacker fully recovered Bob's NEW private key!")
+
+
+output
+Original RSA keys:
+n = 3233
+phi(n) = 3120
+e = 17
+d = 2753
+
+[!] Bob leaks his private key d!
+Attacker now knows d = 2753
+
+Attacker computes phi(n) easily (since small example).
+phi(n) = 3120
+
+Bob chooses a NEW public key e' = 7
+Attacker computes new private key d' = 1783
+
+Encrypting/decrypting with Bob's NEW key:
+Message = 123
+Ciphertext = 2182
+Decrypted = 123
+
+[!] Attack successful — attacker fully recovered Bob's NEW private key!
+
+
+
