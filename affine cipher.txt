@@ -43,3 +43,5 @@ def affine_decrypt(cipher, a, b):
 # Example ciphertext (put yours here)
 ciphertext = "BUUBBBUUUBBUB"
 print("Decrypted:", affine_decrypt(ciphertext, a, b))
+ output 
+BUUBXBUBB
