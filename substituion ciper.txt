@@ -28,3 +28,9 @@ def decode(cipher, mapping):
 
 print("\n\nPartial Decoding:\n")
 print(decode(cipher, mapping))
+
+output
+Plaintext: HELLO WORLD
+Key: KEY
+Ciphertext: RIJVS UYVJN
+Decrypted: HELLO WORLD
