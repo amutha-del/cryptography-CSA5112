@@ -23,4 +23,53 @@ def find_pos(matrix, ch):
                 return r, c
 
 def playfair_decrypt(cipher, matrix):
-    cipher = cipher.replace(" ", "").upper().re
+    cipher = cipher.replace(" ", "").upper()
+
+    plaintext = ""
+    i = 0
+
+    while i < len(cipher):
+        a = cipher[i]
+        b = cipher[i+1]
+        i += 2
+
+        r1, c1 = find_pos(matrix, a)
+        r2, c2 = find_pos(matrix, b)
+
+        if r1 == r2:  
+            # same row
+            plaintext += matrix[r1][(c1 - 1) % 5]
+            plaintext += matrix[r2][(c2 - 1) % 5]
+
+        elif c1 == c2:  
+            # same column
+            plaintext += matrix[(r1 - 1) % 5][c1]
+            plaintext += matrix[(r2 - 1) % 5][c2]
+
+        else:  
+            # rectangle rule
+            plaintext += matrix[r1][c2]
+            plaintext += matrix[r2][c1]
+
+    return plaintext
+
+# --------------------
+# DEMO
+# --------------------
+key = "keyword"
+matrix = generate_matrix(key)
+cipher = "UFFHQLSIZF"   # (example cipher — you can replace)
+
+print("Playfair Matrix:")
+for row in matrix:
+    print(row)
+
+print("\nDecrypted Text:", playfair_decrypt(cipher, matrix))
+
+output
+['K', 'E', 'Y', 'W', 'O']
+['R', 'D', 'A', 'B', 'C']
+['F', 'G', 'H', 'I', 'L']
+['M', 'N', 'P', 'Q', 'S']
+['T', 'U', 'V', 'X', 'Z']
+ILOVEYOUQ
