@@ -29,8 +29,34 @@ def decode(cipher, mapping):
 print("\n\nPartial Decoding:\n")
 print(decode(cipher, mapping))
 
-output
-Plaintext: HELLO WORLD
-Key: KEY
-Ciphertext: RIJVS UYVJN
-Decrypted: HELLO WORLD
+Frequency of each symbol:
+
+8 : 34
+; : 27
+4 : 19
+) : 16
+‡ : 15
+5 : 12
+6 : 11
+* : 10
+( : 9
+† : 8
+1 : 7
+0 : 6
+2 : 5
+9 : 5
+3 : 4
+: : 4
+? : 3
+¶ : 2
+
+ : 2
+. : 1
+] : 1
+— : 1
+  : 1
+
+
+Partial Decoding:
+
+_EE_HT_HEHETHT_T_TT_E_T_T_TT_H_TTT_EHT_EHH_T_T_HTT_HEE_EHT_TT_TEHT_TH_HTTT_T_EHTTT_H_EH_HT_HE_TT_E_
