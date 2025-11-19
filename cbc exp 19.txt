@@ -1,0 +1,59 @@
+# -----------------------------------------------------------
+# Simple CBC Mode Encryption using a toy Triple-DES function
+# (NOT real 3DES — just for CBC demonstration)
+# -----------------------------------------------------------
+
+def xor(a, b):
+    return "".join("0" if x == y else "1" for x, y in zip(a, b))
+
+
+def toy_des(block, key):
+    """Fake DES just for demonstration (bit rotate + XOR)."""
+    return block[3:] + block[:3]  # rotate left by 3 bits
+
+
+def triple_des(block, key):
+    """Toy 3DES = encrypt-decrypt-encrypt (EDE)"""
+    b1 = toy_des(block, key)
+    b2 = toy_des(b1, key)        # pretend decrypt
+    b3 = toy_des(b2, key)
+    return b3
+
+
+def cbc_encrypt(plaintext_blocks, key, iv):
+    ciphertext = []
+    prev = iv
+
+    for block in plaintext_blocks:
+        xored = xor(block, prev)
+        enc = triple_des(xored, key)
+        ciphertext.append(enc)
+        prev = enc
+
+    return ciphertext
+
+
+# ------------- Example --------------
+key = "10101010110011001101010101101010"
+iv  = "00001111000011110000111100001111"
+
+plaintext = [
+    "01010101010101010101010101010101",
+    "11110000111100001111000011110000",
+]
+
+ciphertext = cbc_encrypt(plaintext, key, iv)
+
+print("\nCBC Encryption Using Toy 3DES:\n")
+for i, c in enumerate(ciphertext, 1):
+    print(f"Cipher Block {i}: {c}")
+
+output
+CBC Encryption Using Toy 3DES:
+
+Cipher Block 1: 01001101010101000101101011110101
+Cipher Block 2: 00100011011000000100110101110100
+
+
+
+

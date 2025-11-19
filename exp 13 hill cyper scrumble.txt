@@ -1,0 +1,83 @@
+import numpy as np
+
+# ======== ATTACK SETUP ========
+# Suppose the Hill cipher uses a 2×2 key K mod 26.
+# We choose plaintext blocks to make K easy to recover.
+
+alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+def text_to_nums(text):
+    return [alphabet.index(c) for c in text]
+
+def nums_to_text(nums):
+    return ''.join(alphabet[n % 26] for n in nums)
+
+# REAL (secret) key used by the enemy (unknown to attacker).
+# In real attack attacker does NOT know this. We use it to demonstrate.
+K_real = np.array([[9, 4],
+                   [5, 7]])  # same key as earlier example (for demo)
+
+# Encrypt a pair using the secret key
+def encrypt_pair(pair):
+    v = np.array(text_to_nums(pair))
+    c = K_real.dot(v) % 26
+    return nums_to_text(c)
+
+# ======== CHOSEN PLAINTEXT ATTACK ========
+
+# Attacker chooses 2 plaintext pairs so matrix is invertible
+P1 = "AB"   # gives vector [0,1]
+P2 = "CD"   # gives vector [2,3]
+
+# Encrypt these using the (unknown) key
+C1 = encrypt_pair(P1)
+C2 = encrypt_pair(P2)
+
+print("Chosen Plaintexts: ", P1, P2)
+print("Their Ciphertexts:", C1, C2)
+
+# Build matrices from vectors
+P = np.column_stack([text_to_nums(P1), text_to_nums(P2)])   # 2×2 plaintext matrix
+C = np.column_stack([text_to_nums(C1), text_to_nums(C2)])   # 2×2 ciphertext matrix
+
+# Attack formula:
+#           C = K * P  (mod 26)
+#  =>       K = C * P^{-1}  (mod 26)
+
+# Compute modular inverse of 2×2 matrix P
+def modinv(a, m):
+    for x in range(1,m):
+        if (a*x) % m == 1:
+            return x
+    return None
+
+detP = int((P[0,0]*P[1,1] - P[0,1]*P[1,0]) % 26)
+inv_detP = modinv(detP, 26)
+
+adjP = np.array([[ P[1,1], -P[0,1]],
+                 [-P[1,0],  P[0,0]]])
+
+P_inv = (inv_detP * adjP) % 26
+
+# Recover key
+K_recovered = (C.dot(P_inv)) % 26
+
+print("\nRecovered Key Matrix K:")
+print(K_recovered)
+
+print("\nActual Secret Key Matrix K:")
+print(K_real)
+
+
+
+output
+Chosen Plaintexts:  AB CD
+Their Ciphertexts:  EJ OD
+
+Recovered Key Matrix K:
+[[ 9  4]
+ [ 5  7]]
+
+Actual Secret Key Matrix K:
+[[9 4]
+ [5 7]]

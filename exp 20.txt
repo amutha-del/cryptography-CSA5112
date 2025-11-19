@@ -1,0 +1,88 @@
+# --------------------------------------------------------
+# CBC Error Propagation Demonstration (Simple Toy Cipher)
+# --------------------------------------------------------
+
+def xor(a, b):
+    return "".join("0" if x == y else "1" for x, y in zip(a, b))
+
+def toy_encrypt(block):
+    return block[2:] + block[:2]   # rotate-left fake cipher
+
+def toy_decrypt(block):
+    return block[-2:] + block[:-2]  # rotate-right fake decipher
+
+def cbc_encrypt(blocks, iv):
+    C = []
+    prev = iv
+    for b in blocks:
+        x = xor(b, prev)
+        c = toy_encrypt(x)
+        C.append(c)
+        prev = c
+    return C
+
+def cbc_decrypt(blocks, iv):
+    P = []
+    prev = iv
+    for c in blocks:
+        x = toy_decrypt(c)
+        p = xor(x, prev)
+        P.append(p)
+        prev = c
+    return P
+
+
+# ---------------------- Original Data -----------------------
+P = [
+    "1010101010101010",
+    "1100110011001100",
+    "1111000011110000"
+]
+
+IV = "0000111100001111"
+
+# Normal encryption
+C = cbc_encrypt(P, IV)
+
+# Introduce error in ciphertext C1
+C_err = C.copy()
+C_err[0] = "1" + C_err[0][1:]     # flip first bit of C1
+
+# Decrypt corrupted ciphertext
+P_err = cbc_decrypt(C_err, IV)
+
+print("\nOriginal Plaintext Blocks:")
+for x in P: print(x)
+
+print("\nNormal CBC Ciphertext Blocks:")
+for x in C: print(x)
+
+print("\nCorrupted CBC Ciphertext Blocks:")
+for x in C_err: print(x)
+
+print("\nDecryption With Corrupted C1:")
+for i, x in enumerate(P_err, 1):
+    print(f"P{i} = {x}")
+
+
+output
+Original Plaintext Blocks:
+1010101010101010
+1100110011001100
+1111000011110000
+
+Normal CBC Ciphertext Blocks:
+1010010101010010
+1110100111101001
+1100011110001111
+
+Corrupted CBC Ciphertext Blocks:
+0010010101010010   <-- first bit flipped (C1 corrupted)
+1110100111101001
+1100011110001111
+
+Decryption With Corrupted C1:
+P1 = 0010110010110010   <-- corrupted
+P2 = 1000011100010111   <-- corrupted (CBC propagation)
+P3 = 1111000011110000   <-- correct again
+

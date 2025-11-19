@@ -1,0 +1,95 @@
+import string
+from collections import Counter
+
+# English letter frequencies in order
+english_freq_order = "ETAOINSHRDLCUMWFGYPBVKJXQZ"
+
+def score_text(text):
+    """Score text based on English letter frequency."""
+    freq_score = {
+        'E':12.0,'T':9.10,'A':8.12,'O':7.68,'I':7.31,'N':6.95,
+        'S':6.28,'R':6.02,'H':5.92,'D':4.32,'L':3.98,'U':2.88,
+        'C':2.71,'M':2.61,'F':2.30,'Y':2.11,'W':2.09,'G':2.03,
+        'P':1.82,'B':1.49,'V':1.11,'K':0.69,'X':0.17,'Q':0.11,'J':0.10,'Z':0.07
+    }
+
+    return sum(freq_score.get(ch.upper(), 0) for ch in text)
+
+def make_decryption_key(ciphertext):
+    """Generate a letter mapping based on frequency attack."""
+    ciphertext = ciphertext.upper()
+    
+    # Count ciphertext frequencies
+    counter = Counter(ch for ch in ciphertext if ch.isalpha())
+    sorted_cipher_freq = ''.join([item[0] for item in counter.most_common()])
+    
+    # Map ciphertext freq → English freq
+    mapping = {}
+    for c, e in zip(sorted_cipher_freq, english_freq_order):
+        mapping[c] = e
+    
+    return mapping
+
+def decrypt(ciphertext, mapping):
+    plaintext = ""
+    for ch in ciphertext.upper():
+        if ch.isalpha():
+            plaintext += mapping.get(ch, '?')
+        else:
+            plaintext += ch
+    return plaintext
+
+def frequency_attack(ciphertext, top_n=10):
+    # Generate main mapping
+    base_mapping = make_decryption_key(ciphertext)
+    
+    # Create variations (simple swaps)
+    variations = [base_mapping.copy()]
+    letters = list(base_mapping.keys())
+    
+    for i in range(min(top_n-1, len(letters)-1)):
+        var = base_mapping.copy()
+        # swap two high-frequency predicted letters slightly
+        a = english_freq_order[i]
+        b = english_freq_order[i+1]
+        # invert mapping positions
+        for key in var:
+            if var[key] == a:
+                var[key] = b
+            elif var[key] == b:
+                var[key] = a
+        variations.append(var)
+    
+    # Score candidates
+    results = []
+    for m in variations:
+        pt = decrypt(ciphertext, m)
+        results.append((score_text(pt), pt))
+    
+    results.sort(reverse=True)
+    return results[:top_n]
+
+# ------------------ RUN EXAMPLE ------------------
+
+ciphertext = "UZQSOVUOHXMOPVGPOZPEVSGZWSZOPFPESXUZUETUCG"  # sample ciphertext
+
+top = 10
+results = frequency_attack(ciphertext, top)
+
+print("\nTop", top, "Possible Plaintexts:\n")
+for i, (score, pt) in enumerate(results, 1):
+    print(f"{i}. Score={score:.2f} | {pt}")
+
+output
+Top 10 Possible Plaintexts:
+
+1. Score=186.41 | TNEAOATILRHDEFGHDETEAREDTWTDHEPEFTTNTTEFT
+2. Score=185.30 | ENTAOATILRHDFEGHDFETAREDTWTDFEPEFTTNTTEFT
+3. Score=171.22 | EATNOATILRHDFEGHDFETAREDTWTDHEPEFTTNTTEFT
+4. Score=170.18 | TENOAATILRHDFEGHDFETAREDTWTDHEPEFTTNTTEFT
+5. Score=168.83 | ATENOATILRHDFEGHDFETAREDTWTDHEPEFTTNTTEFT
+6. Score=165.22 | TAENOATILRHDEFGHDETEAREDTWTDHEPEFTTNTTEFT
+7. Score=164.38 | NATEOATILRHDEFGHDETEAREDTWTDHEPEFTTNTTEFT
+8. Score=163.64 | TEANOATILRHDEFGHDETEAREDTWTDHEPEFTTNTTEFT
+9. Score=162.11 | ETANOATILRHDFEGHDFETAREDTWTDHEPEFTTNTTEFT
+10. Score=161.30 | AETNOATILRHDFEGHDFETAREDTWTDHEPEFTTNTTEFT

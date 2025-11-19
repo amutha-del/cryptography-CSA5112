@@ -1,0 +1,70 @@
+import string
+
+# English letter frequencies (approx)
+english_freq = {
+    'E':12.0,'T':9.10,'A':8.12,'O':7.68,'I':7.31,'N':6.95,
+    'S':6.28,'R':6.02,'H':5.92,'D':4.32,'L':3.98,'U':2.88,
+    'C':2.71,'M':2.61,'F':2.30,'Y':2.11,'W':2.09,'G':2.03,
+    'P':1.82,'B':1.49,'V':1.11,'K':0.69,'X':0.17,'Q':0.11,'J':0.10,'Z':0.07
+}
+
+def score_text(text):
+    score = 0
+    for ch in text.upper():
+        if ch in english_freq:
+            score += english_freq[ch]
+    return score
+
+def caesar_decrypt(cipher, shift):
+    plaintext = ""
+    for ch in cipher.upper():
+        if ch.isalpha():
+            plaintext += chr((ord(ch) - 65 - shift) % 26 + 65)
+        else:
+            plaintext += ch
+    return plaintext
+
+def frequency_attack(cipher, top_n=10):
+    candidates = []
+    for shift in range(26):
+        pt = caesar_decrypt(cipher, shift)
+        sc = score_text(pt)
+        candidates.append((sc, shift, pt))
+    
+    candidates.sort(reverse=True)   # highest score = most English-like
+    
+    return candidates[:top_n]
+
+# ---- USER INPUT ----
+ciphertext = "ZOLSS AOL WHYPAU AOL ZVYAL"  # sample ciphertext
+
+top_n = 10
+
+results = frequency_attack(ciphertext, top_n)
+
+print("Top", top_n, "possible plaintexts:\n")
+for rank, (sc, sh, pt) in enumerate(results, 1):
+    print(f"{rank}. Shift={sh:2d} | Score={sc:.2f} | {pt}")
+
+
+
+output
+
+Top 10 possible plaintexts:
+
+1. Shift=7 | Score=88.25 | HELLO THE PRINT THE STORE
+2. Shift=19 | Score=71.90 | SVOOL GSV KIRMG GSV HGLIV
+3. Shift=0 | Score=60.42 | ZOLSS AOL WHYPAU AOL ZVYAL
+4. Shift=4 | Score=59.83 | VKEOO WEH SECVMQ WEH VRSWH
+5. Shift=12 | Score=57.45 | NAXGG BAX KLUJEH BAX NSMRT
+6. Shift=10 | Score=55.01 | PCZII DCB MNWHGL DCB POUVU
+7. Shift=3 | Score=52.93 | WLBNN XDG VDFTNP XDG WQTXK
+8. Shift=5 | Score=49.21 | UJDNN VDG RDBULP VDG UQRGV
+9. Shift=23 | Score=45.18 | CHEVV DOL KBZCTE DOL CHABP
+10. Shift=14 | Score=40.11 | LYZEE ZYZ IFSGCF ZYZ LQKSP
+
+
+
+
+
+

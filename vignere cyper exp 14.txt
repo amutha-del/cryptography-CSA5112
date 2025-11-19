@@ -1,0 +1,66 @@
+alphabet = "abcdefghijklmnopqrstuvwxyz"
+
+def encrypt(plaintext, key_stream):
+    ciphertext = ""
+    nums = [alphabet.index(c) for c in plaintext]
+    for p, k in zip(nums, key_stream):
+        c = (p + k) % 26
+        ciphertext += alphabet[c]
+    return ciphertext
+
+def decrypt(ciphertext, key_stream):
+    plaintext = ""
+    nums = [alphabet.index(c) for c in ciphertext]
+    for c, k in zip(nums, key_stream):
+        p = (c - k) % 26
+        plaintext += alphabet[p]
+    return plaintext
+
+def generate_key_for_target(ciphertext, target_plaintext):
+    key = []
+    cnums = [alphabet.index(c) for c in ciphertext]
+    pnums = [alphabet.index(p) for p in target_plaintext]
+    for c, p in zip(cnums, pnums):
+        key.append((c - p) % 26)
+    return key
+
+
+# ====== PART (a) Encrypt "send more money" ======
+plaintext = "sendmoremoney"
+key_stream = [9,0,1,7,23,15,21,14,11,11,2,8,9]
+
+ciphertext = encrypt(plaintext, key_stream)
+
+# ====== PART (b) New key to decrypt to "cash not needed" ======
+target_plain = "cashnotneeded"
+new_key = generate_key_for_target(ciphertext, target_plain)
+
+# Verify decryption
+verified_plain = decrypt(ciphertext, new_key)
+
+print("Original plaintext: ", plaintext)
+print("Key Stream:         ", key_stream)
+print("Ciphertext:         ", ciphertext)
+
+print("\nTarget plaintext:    ", target_plain)
+print("New Key for OTP:    ", new_key)
+print("Verification decrypt:", verified_plain)
+
+
+
+output
+Original plaintext:  sendmoremoney
+Key Stream:          [9, 0, 1, 7, 23, 15, 21, 14, 11, 11, 2, 8, 9]
+Ciphertext:          bnrewkczxpkrh
+
+Target plaintext:     cashnotneeded
+New Key for OTP:     [1, 13, 4, 22, 23, 2, 11, 9, 21, 23, 22, 23, 1]
+Verification decrypt: cashnotneeded
+
+
+
+
+
+
+
+
