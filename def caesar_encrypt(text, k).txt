@@ -11,4 +11,32 @@ def caesar_encrypt(text, k):
 # Demo
 text = "HELLO WORLD"
 for k in range(1, 26):
-    print("k =", k, "→", caesar_encrypt(text, k))
+    print("k =", k, "→", caesar_encrypt(text, k))  
+output 
+k = 1 → IFMMP XPSME
+k = 2 → JGNNQ YQTNF
+k = 3 → KHOOR ZRUOG
+k = 4 → LIPPS ASVPH
+k = 5 → MJQQT BTWQI
+k = 6 → NKRRU CUXRJ
+k = 7 → OLSSV DVYSK
+k = 8 → PMTTW EWZTL
+k = 9 → QNUUX FXAUM
+k = 10 → ROOVY GYBVN
+k = 11 → SPPWZ HZCWO
+k = 12 → TQQXA IADX P
+k = 13 → URRYB JBEYQ
+k = 14 → VSSZC KCFZR
+k = 15 → WTTAD LDGAS
+k = 16 → XUUBE MEHBT
+k = 17 → YVV C NFICU
+k = 18 → ZW W D OGJDV
+k = 19 → AXEEH PHKEW
+k = 20 → BYFFI QILFX
+k = 21 → CZGGJ RJMGY
+k = 22 → DAHHK SKNHZ
+k = 23 → EBIIL TL OIA
+k = 24 → FCJJM UM PJB
+k = 25 → GDKKN VN QKC
+
+
