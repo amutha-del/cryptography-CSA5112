@@ -43,3 +43,9 @@ print("Plaintext:", plaintext)
 print("Key:", key)
 print("Ciphertext:", cipher)
 print("Decrypted:", plain)
+
+output
+Plaintext: HELLO WORLD
+Key: KEY
+Ciphertext: RIJVS UYVJN
+Decrypted: HELLO WORLD
