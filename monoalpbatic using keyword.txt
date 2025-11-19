@@ -59,3 +59,11 @@ plain = decrypt(cipher, key)
 print("\nPlaintext:", message)
 print("Ciphertext:", cipher)
 print("Decrypted:", plain)
+
+output 
+Generated Cipher Alphabet:
+CIPHERABDFGJKLMNOQSTUVWXYZ
+
+Plaintext: HELLO WORLD
+Ciphertext: BEJJM WMQJH
+Decrypted: HELLO WORLD
